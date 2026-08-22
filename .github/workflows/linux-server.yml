@@ -47,7 +47,15 @@ jobs:
           sudo mkdir -p /home/commander04/workspace
           sudo chown -R commander04:commander04 /home/commander04/workspace
 
-      - name: 5. Connect Tailscale VPN & Show Access Info
+      # قرار دادن OpenAI API Key روی ماشین
+      - name: 5. Configure OpenAI API Key
+        run: |
+          sudo mkdir -p /etc/commander
+          sudo bash -c 'printf "%s" "$OPENAI_API_KEY" > /etc/commander/openai_api_key'
+          sudo chmod 600 /etc/commander/openai_api_key
+          sudo chown root:root /etc/commander/openai_api_key
+
+      - name: 6. Connect Tailscale VPN & Show Access Info
         env:
           TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
         run: |
@@ -68,7 +76,7 @@ jobs:
           echo "  💾 Persistent Folder : /home/commander04/workspace"
           echo "=================================================="
 
-      - name: 6. Server Keep-Alive (5h 55m)
+      - name: 7. Server Keep-Alive (5h 55m)
         run: |
           for i in {1..355}; do
             sleep 60
@@ -76,7 +84,7 @@ jobs:
           done
 
       # ذخیره خودکار فایل‌های پوشه دائمی قبل از ری‌استارت
-      - name: 7. Save Workspace to Cloud
+      - name: 8. Save Workspace to Cloud
         uses: actions/cache@v4
         if: always()
         with:
